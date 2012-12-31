@@ -2,7 +2,26 @@
 <resources>
 
     <string name="app_name">famcash</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="taskPicker_instruct">Pick the task, then hit button</string>
+    <string name="taskSubmit">Submit</string>
     <string name="menu_settings">Settings</string>
-
+    
+	<string-array name="task_list">
+        <item>Brush Teeth Twice</item>            
+        <item>Clean Basement</item>
+        <item>Clean Bathroom</item>
+        <item>Clean Bedroom</item>
+        <item>Clean Familyroom</item>
+        <item>Clean Windows</item>
+        <item>Empty Dishwasher</item>
+        <item>Fill Dishwasher</item>
+        <item>Make Bed</item>
+        <item>Set Table</item>
+        <item>Sweep Kitchen</item>
+    </string-array>
+    
+	<string-array name="kid_list">
+	    <item>Caroline</item>
+	    <item>Owen</item>
+	</string-array>
 </resources>
