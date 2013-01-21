@@ -22,6 +22,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <provider
+       		android:authorities="net.famcash.contentprovider"
+       		android:name=".contentprovider.DBContentProvider"
+       		android:exported="false" >
+		</provider>
     </application>
 
 </manifest>
