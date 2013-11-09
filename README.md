@@ -23,3 +23,7 @@ Intended feature list
 -- via facebook
 * echo settings to the cloud
 * echo value/status to the cloud
+
+Back on the wagon
+==================
+It's been a while since I worked on this. Adding DB features now so I can store state of kid's work.
