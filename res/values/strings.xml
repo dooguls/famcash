@@ -7,6 +7,7 @@
     <string name="menu_settings">Settings</string>
     
 	<string-array name="task_list">
+	    <item>Show Fruit of Spirit</item>
         <item>Brush Teeth Twice</item>            
         <item>Clean Basement</item>
         <item>Clean Bathroom</item>

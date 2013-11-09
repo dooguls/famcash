@@ -3,6 +3,8 @@ package net.famcash;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
+import android.net.Uri;
+import android.database.Cursor;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
