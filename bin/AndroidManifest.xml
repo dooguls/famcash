@@ -6,7 +6,7 @@
 
     <uses-sdk
         android:minSdkVersion="10"
-        android:targetSdkVersion="16" />
+        android:targetSdkVersion="19" />
 
     <application
         android:allowBackup="true"
@@ -23,8 +23,8 @@
             </intent-filter>
         </activity>
         <provider
-       		android:authorities="net.famcash.contentprovider"
-       		android:name=".contentprovider.DBContentProvider"
+       		android:authorities="net.famcash.contentprovider.FamCashContentProvider"
+       		android:name="net.famcash.contentprovider.FamCashContentProvider"
        		android:exported="false" >
 		</provider>
     </application>
