@@ -10,12 +10,11 @@ public class EventTable {
   public static final String COLUMN_ID = "_id";
   public static final String COLUMN_TASKITEM ="taskItem";
   public static final String COLUMN_KIDNAME = "kidName";
-  public static final String COLUMN_ITEMVALUE = "itemValue";
   public static final String COLUMN_KIDRUNNINGTOTOAL = "kidRunningTotal";
-  // I know keeping a running total in this table is dumb, and I should 
+  public static final String COLUMN_DATEDONE = "dateDone";
+  //I know keeping a running total in this table is dumb, and I should 
   // make another table for kids and their current total, but I'm going
   // for simple here first.
-  public static final String COLUMN_DATEDONE = "dateDone";
   // don't forget SQLITE expects dates stored like this: YYYY-MM-DD HH:MM:SS
 
   // Database creation SQL statement
@@ -25,17 +24,16 @@ public class EventTable {
       + COLUMN_ID + " integer primary key autoincrement, " 
       + COLUMN_TASKITEM + " text not null, " 
       + COLUMN_KIDNAME + " text not null,"
-      + COLUMN_ITEMVALUE + " float not null,"
-      + COLUMN_KIDRUNNINGTOTAL + " float not null,"
+      + COLUMN_KIDRUNNINGTOTOAL + " float not null,"
       + COLUMN_DATEDONE  + " datetime default current_timestamp,"
       + ");";
 
   private static final String DEFAULT_ROW_1 = "insert into event"
-      + "(taskItem,kidName,itemValue,kidRunningTotal) "
-      + "values('def1','Owen',0,0);";
+      + "(taskItem,kidName,kidRunningTotal) "
+      + "values('first row','Owen',0);";
   private static final String DEFAULT_ROW_2 = "insert into event"
-      + "(taskItem,kidName,itemValue,kidRunningTotal) "
-      + "values('def1','Caroline',0,0);";
+      + "(taskItem,kidName,kidRunningTotal) "
+      + "values('first row','Caroline',0);";
 
   public static void onCreate(SQLiteDatabase database) {
     database.execSQL(TABLE_CREATE);
