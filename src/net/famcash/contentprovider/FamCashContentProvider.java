@@ -13,8 +13,6 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
 import net.famcash.database.DBHelper;
-import net.famcash.database.TaskTable;
-import net.famcash.database.KidTable;
 import net.famcash.database.EventTable;
 
 public class FamCashContentProvider extends ContentProvider {
@@ -23,12 +21,8 @@ public class FamCashContentProvider extends ContentProvider {
   private DBHelper database;
 
   // Used for the UriMacher
-  private static final int TASKS = 10;
-  private static final int TASK_ID = 11;
-  private static final int KIDS = 20;
-  private static final int KID_ID = 21;
-  private static final int EVENTS = 30;
-  private static final int EVENT_ID = 31;
+  private static final int EVENTS = 10;
+  private static final int EVENT_ID = 11;
 
   private static final String AUTHORITY = "net.famcash.contentprovider";
 
@@ -43,10 +37,6 @@ public class FamCashContentProvider extends ContentProvider {
 
   private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
   static {
-    sURIMatcher.addURI(AUTHORITY, BASE_PATH, TASKS);
-    sURIMatcher.addURI(AUTHORITY, BASE_PATH + "/#", TASK_ID);
-    sURIMatcher.addURI(AUTHORITY, BASE_PATH, KIDS);
-    sURIMatcher.addURI(AUTHORITY, BASE_PATH + "/#", KID_ID);
     sURIMatcher.addURI(AUTHORITY, BASE_PATH, EVENTS);
     sURIMatcher.addURI(AUTHORITY, BASE_PATH + "/#", EVENT_ID);
   }
@@ -69,28 +59,6 @@ public class FamCashContentProvider extends ContentProvider {
 
     int uriType = sURIMatcher.match(uri);
     switch (uriType) {
-    case TASKS:
-    	// Set the table
-        queryBuilder.setTables(TaskTable.TABLE_TASK);
-      break;
-    case TASK_ID:
-    	// Set the table
-        queryBuilder.setTables(TaskTable.TABLE_TASK);
-      // Adding the ID to the original query
-      queryBuilder.appendWhere(TaskTable.COLUMN_ID + "="
-          + uri.getLastPathSegment());
-      break;
-    case KIDS:
-    	// Set the table
-        queryBuilder.setTables(KidTable.TABLE_KID);
-      break;
-    case KID_ID:
-    	// Set the table
-        queryBuilder.setTables(KidTable.TABLE_KID);
-      // Adding the ID to the original query
-      queryBuilder.appendWhere(KidTable.COLUMN_ID + "="
-          + uri.getLastPathSegment());
-      break;
     case EVENTS:
     	// Set the table
         queryBuilder.setTables(EventTable.TABLE_EVENT);
@@ -127,12 +95,6 @@ public class FamCashContentProvider extends ContentProvider {
     //int rowsDeleted = 0;
     long id = 0;
     switch (uriType) {
-    case TASKS:
-      id = sqlDB.insert(TaskTable.TABLE_TASK, null, values);
-      break;
-    case KIDS:
-        id = sqlDB.insert(KidTable.TABLE_KID, null, values);
-        break;
     case EVENTS:
         id = sqlDB.insert(EventTable.TABLE_EVENT, null, values);
         break;    
@@ -151,43 +113,11 @@ public class FamCashContentProvider extends ContentProvider {
     String id = uri.getLastPathSegment();
     
     switch (uriType) {
-    case TASKS:
-      rowsDeleted = sqlDB.delete(TaskTable.TABLE_TASK, selection,
-          selectionArgs);
-      break;
-    case TASK_ID:
-      if (TextUtils.isEmpty(selection)) {
-        rowsDeleted = sqlDB.delete(TaskTable.TABLE_TASK,
-            TaskTable.COLUMN_ID + "=" + id, 
-            null);
-      } else {
-        rowsDeleted = sqlDB.delete(TaskTable.TABLE_TASK,
-            TaskTable.COLUMN_ID + "=" + id 
-            + " and " + selection,
-            selectionArgs);
-      }
-      break;
-    case KIDS:
-        rowsDeleted = sqlDB.delete(KidTable.TABLE_KID, selection,
-            selectionArgs);
-        break;
-    case KID_ID:
-        if (TextUtils.isEmpty(selection)) {
-          rowsDeleted = sqlDB.delete(KidTable.TABLE_KID,
-              KidTable.COLUMN_ID + "=" + id, 
-              null);
-        } else {
-          rowsDeleted = sqlDB.delete(KidTable.TABLE_KID,
-              KidTable.COLUMN_ID + "=" + id 
-              + " and " + selection,
-              selectionArgs);
-        }
-        break;
       case EVENTS:
           rowsDeleted = sqlDB.delete(EventTable.TABLE_EVENT, selection,
               selectionArgs);
           break;
-        case EVENT_ID:
+      case EVENT_ID:
           if (TextUtils.isEmpty(selection)) {
             rowsDeleted = sqlDB.delete(EventTable.TABLE_EVENT,
                 EventTable.COLUMN_ID + "=" + id, 
@@ -216,48 +146,6 @@ public class FamCashContentProvider extends ContentProvider {
     String id = uri.getLastPathSegment();
 
     switch (uriType) {
-    case TASKS:
-      rowsUpdated = sqlDB.update(TaskTable.TABLE_TASK, 
-          values, 
-          selection,
-          selectionArgs);
-      break;
-    case TASK_ID:
-      if (TextUtils.isEmpty(selection)) {
-        rowsUpdated = sqlDB.update(TaskTable.TABLE_TASK, 
-            values,
-            TaskTable.COLUMN_ID + "=" + id, 
-            null);
-      } else {
-        rowsUpdated = sqlDB.update(TaskTable.TABLE_TASK, 
-            values,
-            TaskTable.COLUMN_ID + "=" + id 
-            + " and " 
-            + selection,
-            selectionArgs);
-      }
-      break;
-    case KIDS:
-        rowsUpdated = sqlDB.update(KidTable.TABLE_KID, 
-            values, 
-            selection,
-            selectionArgs);
-        break;
-      case KID_ID:
-        if (TextUtils.isEmpty(selection)) {
-          rowsUpdated = sqlDB.update(KidTable.TABLE_KID, 
-              values,
-              KidTable.COLUMN_ID + "=" + id, 
-              null);
-        } else {
-          rowsUpdated = sqlDB.update(KidTable.TABLE_KID, 
-              values,
-              KidTable.COLUMN_ID + "=" + id 
-              + " and " 
-              + selection,
-              selectionArgs);
-        }
-        break;  
       case EVENTS:
           rowsUpdated = sqlDB.update(EventTable.TABLE_EVENT, 
               values, 
@@ -287,12 +175,9 @@ public class FamCashContentProvider extends ContentProvider {
   }//end public int update()
 
   private void checkColumns(String[] projection) {
-    String[] available = { TaskTable.COLUMN_ID, TaskTable.COLUMN_TASKNAME,
-        TaskTable.COLUMN_ONETIME,
-        KidTable.COLUMN_ID, KidTable.COLUMN_KIDNAME, KidTable.COLUMN_CURRENTCASH,
-        KidTable.COLUMN_LASTCASH,
-        EventTable.COLUMN_ID, EventTable.COLUMN_TASKTABLEID,
-        EventTable.COLUMN_KIDTABLEID, EventTable.COLUMN_CASHVALUE
+    String[] available = { EventTable.COLUMN_ID, EventTable.COLUMN_TASKITEM,
+        EventTable.COLUMN_KIDNAME, EventTable.COLUMN_ITEMVALUE,
+        EventTable.COLUMN_KIDRUNNINGTOTAL, EventTable.COLUMN_DATEDONE
          };
     if (projection != null) {
       HashSet<String> requestedColumns = new HashSet<String>(Arrays.asList(projection));
