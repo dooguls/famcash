@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-  private static final String DATABASE_NAME = "famcashtable.db";
+  private static final String DATABASE_NAME = "famcash.db";
   private static final int DATABASE_VERSION = 1;
 
   public DBHelper(Context context) {

@@ -2,9 +2,10 @@ package net.famcash;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
-//import android.net.Uri;
-//import android.database.Cursor;
+import android.net.Uri; 
+import android.database.Cursor;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
@@ -13,7 +14,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Button;
 import android.widget.Toast;
-//import android.widget.TextView;
+
+import net.famcash.contentprovider.FamCashContentProvider;
+import net.famcash.database.*;
 
 public class TaskAward extends Activity {
 
@@ -54,6 +57,7 @@ public class TaskAward extends Activity {
     public static final String SELECTION_MARKER =
             SELECTION_KEY + PROPERTY_DELIMITER;
 	
+    private Uri awardUri;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +89,16 @@ public class TaskAward extends Activity {
                 onSaveButtonClicked();
             }
         });
+        
+        Bundle extras = getIntent().getExtras();
+        // check from the saved Instance
+        awardUri = (savedInstanceState == null) ? null : (Uri) savedInstanceState.getParcelable(FamCashContentProvider.CONTENT_ITEM_TYPE);
+        //or passed from another activity
+        if (extras != null) {
+        	awardUri = extras.getParcelable(FamCashContentProvider.CONTENT_ITEM_TYPE);
+        }
+        
+        
     }//end of onCreate
     
     public class myOnItemSelectedListener implements OnItemSelectedListener {
@@ -153,7 +167,7 @@ public class TaskAward extends Activity {
     private void onSaveButtonClicked() {
         //Log.v(TAG, "Save button clicked");
         recordTaskEntry();
-        finish();
+        //finish();
     }
     
     protected void recordTaskEntry() {
@@ -163,7 +177,50 @@ public class TaskAward extends Activity {
         //need to write this to a local database, but don't know how to do that yet, so we Toast!
         Context ctx = getApplicationContext();
         int duration = Toast.LENGTH_LONG;
-        Toast toast = Toast.makeText(ctx, "User selected task: " + taskSpinnerSelection + " for kid: " + kidSpinnerSelection, duration);
+        Toast toast = Toast.makeText(ctx, "User selected task: " + taskSpinnerSelection + " for kid: " + kidSpinnerSelection + "start db work", duration);
+        toast.show();
+        
+        // do insert
+        
+        //don't record anything if the task and kid are blank
+        if (taskSpinnerSelection.length() == 0 && kidSpinnerSelection.length() == 0) {
+        	return;
+        }
+        
+        ContentValues values = new ContentValues();
+        float taskValue = 0;
+        int kidId = 0;
+        int taskId = 0;
+        //query for kid id based on kid name, then insert that kidID into the event table
+        String[] kidProjection = { KidTable.COLUMN_CURRENTCASH, KidTable.COLUMN_ID, KidTable.COLUMN_KIDNAME,
+        		KidTable.COLUMN_LASTCASH };
+        //Uri kidUri = new Uri ("content://net.famcash.contentprovider/famcash/20/");
+        String kidWhere = KidTable.COLUMN_KIDNAME + " like '%" + kidSpinnerSelection + "%'";
+        Cursor kidCursor = getContentResolver().query(awardUri, kidProjection, kidWhere, null, null); //don't think this is right uri
+        if (kidCursor != null) {
+        	kidCursor.moveToFirst();
+        	kidId = kidCursor.getInt(kidCursor.getColumnIndexOrThrow(KidTable.COLUMN_ID));
+        }
+        values.put(EventTable.COLUMN_KIDTABLEID, kidId);
+        //query for taskid and task value based on task spinner selection, then insert that stuff into the event table
+        String[] taskProjection = { TaskTable.COLUMN_ID, TaskTable.COLUMN_ONETIME, TaskTable.COLUMN_TASKNAME, TaskTable.TABLE_TASK };
+        //Uri taskUri = new (Uri ("content://net.famcash.contentprovider/famcash/10/");
+        String taskWhere = TaskTable.COLUMN_TASKNAME + " like '%" + taskSpinnerSelection + "%'";
+        Cursor taskCursor = getContentResolver().query(awardUri, taskProjection, taskWhere, null, null);//don't think this is the right uri
+        if (taskCursor != null) {
+        	taskCursor.moveToFirst();
+        	taskId = taskCursor.getInt(taskCursor.getColumnIndexOrThrow(TaskTable.COLUMN_ID));
+        	taskValue = taskCursor.getFloat(taskCursor.getColumnIndexOrThrow(TaskTable.COLUMN_ID));
+        }
+        values.put(EventTable.COLUMN_TASKTABLEID, taskId);
+        values.put(EventTable.COLUMN_CASHVALUE, taskValue);
+        //need to be aware that if the insert explicitly sets DATEDONE to null, then i'll get null for EventTable.COLUMN_DATEDONE
+        //hopefully I don't have to do anything and the database will auto insert dates into the rows like I want.
+        
+        if(awardUri == null) {
+        	awardUri = getContentResolver().insert(FamCashContentProvider.CONTENT_URI, values);
+        }
+        toast = Toast.makeText(ctx, "Finished writing database. kidID: " + kidId + " taskID: " + taskId + " taskValue:" + taskValue, duration);
         toast.show();
     }//end of recordTaskEntry
     

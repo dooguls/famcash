@@ -22,8 +22,13 @@ public class KidTable {
       + COLUMN_LASTCASH + " float not null,"
       + ");";
 
+  private static final String ADD_DEFAULT_KID_1 = "insert into kid (kidName,currentCash,lastCash) values ('Owen',0,0);";
+  private static final String ADD_DEFAULT_KID_2 = "insert into kid (kidName,currentCash,lastCash) values ('Caroline',0,0);";
+  
   public static void onCreate(SQLiteDatabase database) {
     database.execSQL(TABLE_CREATE);
+    database.execSQL(ADD_DEFAULT_KID_1);
+    database.execSQL(ADD_DEFAULT_KID_2);
   }
 
   public static void onUpgrade(SQLiteDatabase database, int oldVersion,

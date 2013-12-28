@@ -5,6 +5,8 @@
     <string name="taskPicker_instruct">Pick the task, then hit button</string>
     <string name="taskSubmit">Submit</string>
     <string name="menu_settings">Settings</string>
+    <string name="no_results_yet">No Results Yet</string>
+    <string name="insert_string">Insert</string>
     
 	<string-array name="task_list">
         <item>Brush Teeth Twice</item>            

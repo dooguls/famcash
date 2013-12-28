@@ -11,6 +11,8 @@ public class EventTable {
   public static final String COLUMN_TASKTABLEID ="taskTableID";
   public static final String COLUMN_KIDTABLEID = "kidTableID";
   public static final String COLUMN_CASHVALUE = "cashValue";
+  public static final String COLUMN_DATEDONE = "dateDone";
+  // don't forget SQLITE expects dates stored like this: YYYY-MM-DD HH:MM:SS
 
   // Database creation SQL statement
   private static final String TABLE_CREATE = "create table " 
@@ -20,6 +22,7 @@ public class EventTable {
       + COLUMN_TASKTABLEID + " integer not null, " 
       + COLUMN_KIDTABLEID + " integer not null,"
       + COLUMN_CASHVALUE + " float not null,"
+      + COLUMN_DATEDONE  + " datetime default current_timestamp,"
       + ");";
 
   public static void onCreate(SQLiteDatabase database) {
