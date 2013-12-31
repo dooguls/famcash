@@ -10,7 +10,7 @@ public class EventTable {
   public static final String COLUMN_ID = "_id";
   public static final String COLUMN_TASKITEM ="taskItem";
   public static final String COLUMN_KIDNAME = "kidName";
-  public static final String COLUMN_KIDRUNNINGTOTOAL = "kidRunningTotal";
+  public static final String COLUMN_KIDRUNNINGTOTAL = "kidRunningTotal";
   public static final String COLUMN_DATEDONE = "dateDone";
   //I know keeping a running total in this table is dumb, and I should 
   // make another table for kids and their current total, but I'm going
@@ -24,7 +24,7 @@ public class EventTable {
       + COLUMN_ID + " integer primary key autoincrement, " 
       + COLUMN_TASKITEM + " text not null, " 
       + COLUMN_KIDNAME + " text not null,"
-      + COLUMN_KIDRUNNINGTOTOAL + " float not null,"
+      + COLUMN_KIDRUNNINGTOTAL + " float not null,"
       + COLUMN_DATEDONE  + " datetime default current_timestamp,"
       + ");";
 

@@ -193,7 +193,7 @@ public class TaskAward extends Activity {
         float kidRunningTotalValue = 0f;
         //query event table for most recent kid entry to get runningTotal value for the kid
         String[] eventProjection = { EventTable.COLUMN_ID, EventTable.COLUMN_TASKITEM, EventTable.COLUMN_KIDNAME,
-        		EventTable.COLUMN_KIDRUNNINGTOTOAL, EventTable.COLUMN_DATEDONE };
+        		EventTable.COLUMN_KIDRUNNINGTOTAL, EventTable.COLUMN_DATEDONE };
         
         //SELECT * FROM table ORDER BY column DESC LIMIT 1;  -- query example to get the last submitted row
         String eventWhere = EventTable.COLUMN_KIDNAME + " like '%" + kidSpinnerSelection + "%'";
@@ -203,13 +203,13 @@ public class TaskAward extends Activity {
         Cursor eventCursor = getContentResolver().query(awardUri, eventProjection, eventWhere, null, eventOrder); //don't think this is right uri
         if (eventCursor != null) {
         	//eventCursor.moveToFirst(); only pulling one row, so I don't think I need this
-        	kidRunningTotalValue = eventCursor.getFloat(eventCursor.getColumnIndexOrThrow(EventTable.COLUMN_KIDRUNNINGTOTOAL));
+        	kidRunningTotalValue = eventCursor.getFloat(eventCursor.getColumnIndexOrThrow(EventTable.COLUMN_KIDRUNNINGTOTAL));
         }
         //add eventValue of current event to runningTotal
         kidRunningTotalValue += DEFAULT_TASK_VALUE;
         //insert into the table
         values.put(EventTable.COLUMN_KIDNAME, kidSpinnerSelection);
-        values.put(EventTable.COLUMN_KIDRUNNINGTOTOAL, kidRunningTotalValue);
+        values.put(EventTable.COLUMN_KIDRUNNINGTOTAL, kidRunningTotalValue);
         values.put(EventTable.COLUMN_TASKITEM, taskSpinnerSelection);
         //need to be aware that if the insert explicitly sets DATEDONE to null, then i'll get null for EventTable.COLUMN_DATEDONE
         //hopefully I don't have to do anything and the database will auto insert dates into the rows like I want.

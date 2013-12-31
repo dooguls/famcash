@@ -173,10 +173,10 @@ public class FamCashContentProvider extends ContentProvider {
     getContext().getContentResolver().notifyChange(uri, null);
     return rowsUpdated;
   }//end public int update()
-
+  
   private void checkColumns(String[] projection) {
     String[] available = { EventTable.COLUMN_ID, EventTable.COLUMN_TASKITEM,
-        EventTable.COLUMN_KIDNAME, EventTable.COLUMN_ITEMVALUE,
+        EventTable.COLUMN_KIDNAME, 
         EventTable.COLUMN_KIDRUNNINGTOTAL, EventTable.COLUMN_DATEDONE
          };
     if (projection != null) {
