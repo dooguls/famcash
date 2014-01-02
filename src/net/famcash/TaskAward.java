@@ -203,6 +203,8 @@ public class TaskAward extends Activity {
         //String eventSelect = EventTable.COLUMN_KIDNAME + ", " + EventTable.COLUMN_KIDRUNNINGTOTOAL + EventTable.COLUMN_DATEDONE;
         //String eventSelect = "kidName,kidRunningTotal,dateDone";
         String eventOrder = EventTable.COLUMN_DATEDONE + " desc limit 1";
+        Log.d(OverviewActivity.class.getName(), "Grabbing Cursor");
+
         Cursor eventCursor = getContentResolver().query(awardUri, eventProjection, eventWhere, null, eventOrder); //don't think this is right uri
         if (eventCursor != null) {
         	//eventCursor.moveToFirst(); only pulling one row, so I don't think I need this
