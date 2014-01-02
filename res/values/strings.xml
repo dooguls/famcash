@@ -8,6 +8,7 @@
     <string name="no_results_yet">No Results Yet</string>
     <string name="insert_string">Insert</string>
     <string name="famcash_icon">Famcash icon</string>
+    <string name="menu_delete">Delete Todo</string>
     
 	<string-array name="task_list">
         <item>Brush Teeth Twice</item>            

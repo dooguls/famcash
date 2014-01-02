@@ -175,10 +175,11 @@ public class FamCashContentProvider extends ContentProvider {
   }//end public int update()
   
   private void checkColumns(String[] projection) {
-    String[] available = { EventTable.COLUMN_ID, EventTable.COLUMN_TASKITEM,
-        EventTable.COLUMN_KIDNAME, 
-        EventTable.COLUMN_KIDRUNNINGTOTAL, EventTable.COLUMN_DATEDONE
-         };
+    String[] available = { 
+        EventTable.COLUMN_ID, EventTable.COLUMN_TASKITEM,
+        EventTable.COLUMN_KIDNAME, EventTable.COLUMN_KIDRUNNINGTOTAL,
+        EventTable.COLUMN_DATEDONE
+        };
     if (projection != null) {
       HashSet<String> requestedColumns = new HashSet<String>(Arrays.asList(projection));
       HashSet<String> availableColumns = new HashSet<String>(Arrays.asList(available));

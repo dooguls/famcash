@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Button;
 import android.widget.Toast;
+import android.util.Log;
 
 import net.famcash.contentprovider.FamCashContentProvider;
 import net.famcash.database.*;
@@ -176,6 +177,8 @@ public class TaskAward extends Activity {
     	String taskSpinnerSelection = getTaskSpinnerSelection();
         String kidSpinnerSelection = getKidSpinnerSelection();
         
+        Log.d(OverviewActivity.class.getName(), "starting recordTaskEntry with task: " + taskSpinnerSelection + " & kid " + kidSpinnerSelection);
+        
         //need to write this to a local database, but don't know how to do that yet, so we Toast!
         Context ctx = getApplicationContext();
         int duration = Toast.LENGTH_LONG;
@@ -200,6 +203,7 @@ public class TaskAward extends Activity {
         //String eventSelect = EventTable.COLUMN_KIDNAME + ", " + EventTable.COLUMN_KIDRUNNINGTOTOAL + EventTable.COLUMN_DATEDONE;
         //String eventSelect = "kidName,kidRunningTotal,dateDone";
         String eventOrder = EventTable.COLUMN_DATEDONE + " desc limit 1";
+        Log.d(OverviewActivity.class.getName(), "Grabbing Cursor");
         Cursor eventCursor = getContentResolver().query(awardUri, eventProjection, eventWhere, null, eventOrder); //don't think this is right uri
         if (eventCursor != null) {
         	//eventCursor.moveToFirst(); only pulling one row, so I don't think I need this
@@ -225,7 +229,7 @@ public class TaskAward extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.activity_task_award, menu);
+        getMenuInflater().inflate(R.menu.listmenu, menu);
         return true;
     }//end onCreateOptionsMenu
     

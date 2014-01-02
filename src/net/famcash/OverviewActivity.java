@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.util.Log;
 import net.famcash.contentprovider.FamCashContentProvider;
 import net.famcash.database.EventTable;
 
@@ -29,8 +30,8 @@ import net.famcash.database.EventTable;
 
 public class OverviewActivity extends ListActivity implements
 		LoaderManager.LoaderCallbacks<Cursor> {
-	private static final int ACTIVITY_CREATE = 0;
-	private static final int ACTIVITY_EDIT = 1;
+	//private static final int ACTIVITY_CREATE = 0;
+	//private static final int ACTIVITY_EDIT = 1;
 	private static final int DELETE_ID = Menu.FIRST + 1;
 	// private Cursor cursor;
 	private SimpleCursorAdapter adapter;
@@ -49,7 +50,7 @@ public class OverviewActivity extends ListActivity implements
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.activity_task_award, menu);
+		inflater.inflate(R.menu.listmenu, menu);
 		return true;
 	}
 
@@ -88,19 +89,23 @@ public class OverviewActivity extends ListActivity implements
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
-		Intent i = new Intent(this, TaskAward.class);
+		Log.d(OverviewActivity.class.getName(), "Someone clicked on a list item ");
+		/*Intent i = new Intent(this, TaskAward.class);
 		Uri todoUri = Uri.parse(FamCashContentProvider.CONTENT_URI + "/" + id);
 		i.putExtra(FamCashContentProvider.CONTENT_ITEM_TYPE, todoUri);
 
 		// Activity returns an result if called with startActivityForResult
-		startActivity(i);
+		startActivity(i);*/
+
 	}
 
 	private void fillData() {
 
 		// Fields from the database (projection)
 		// Must include the _id column for the adapter to work
-		String[] from = new String[] { EventTable.COLUMN_ID };
+		//String[] from = new String[] { EventTable.COLUMN_ID };
+		String[] from = new String[] { EventTable.COLUMN_KIDNAME };
+
 		// Fields on the UI to which we map
 		int[] to = new int[] { R.id.label };
 

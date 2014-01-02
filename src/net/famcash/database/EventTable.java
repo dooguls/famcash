@@ -25,7 +25,7 @@ public class EventTable {
       + COLUMN_TASKITEM + " text not null, " 
       + COLUMN_KIDNAME + " text not null,"
       + COLUMN_KIDRUNNINGTOTAL + " float not null,"
-      + COLUMN_DATEDONE  + " datetime default current_timestamp,"
+      + COLUMN_DATEDONE  + " datetime default current_timestamp"
       + ");";
 
   private static final String DEFAULT_ROW_1 = "insert into event"
