@@ -2,9 +2,10 @@ package net.famcash;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
-//import android.net.Uri;
-//import android.database.Cursor;
+import android.net.Uri; 
+import android.database.Cursor;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
@@ -13,7 +14,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Button;
 import android.widget.Toast;
-//import android.widget.TextView;
+import android.util.Log;
+
+import net.famcash.contentprovider.FamCashContentProvider;
+import net.famcash.database.*;
 
 public class TaskAward extends Activity {
 
@@ -54,6 +58,9 @@ public class TaskAward extends Activity {
     public static final String SELECTION_MARKER =
             SELECTION_KEY + PROPERTY_DELIMITER;
 	
+    private static final float DEFAULT_TASK_VALUE = 0.1f;
+    
+    private Uri awardUri;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +92,16 @@ public class TaskAward extends Activity {
                 onSaveButtonClicked();
             }
         });
+        
+        Bundle extras = getIntent().getExtras();
+        // check from the saved Instance
+        awardUri = (savedInstanceState == null) ? null : (Uri) savedInstanceState.getParcelable(FamCashContentProvider.CONTENT_ITEM_TYPE);
+        //or passed from another activity
+        if (extras != null) {
+        	awardUri = extras.getParcelable(FamCashContentProvider.CONTENT_ITEM_TYPE);
+        }
+        
+        
     }//end of onCreate
     
     public class myOnItemSelectedListener implements OnItemSelectedListener {
@@ -153,24 +170,65 @@ public class TaskAward extends Activity {
     private void onSaveButtonClicked() {
         //Log.v(TAG, "Save button clicked");
         recordTaskEntry();
-        finish();
+        //finish();
     }
     
     protected void recordTaskEntry() {
     	String taskSpinnerSelection = getTaskSpinnerSelection();
         String kidSpinnerSelection = getKidSpinnerSelection();
         
+        Log.d(OverviewActivity.class.getName(), "starting recordTaskEntry with task: " + taskSpinnerSelection + " & kid " + kidSpinnerSelection);
+        
         //need to write this to a local database, but don't know how to do that yet, so we Toast!
         Context ctx = getApplicationContext();
         int duration = Toast.LENGTH_LONG;
-        Toast toast = Toast.makeText(ctx, "User selected task: " + taskSpinnerSelection + " for kid: " + kidSpinnerSelection, duration);
+        Toast toast = Toast.makeText(ctx, "User selected task: " + taskSpinnerSelection + " for kid: " + kidSpinnerSelection + "start db work", duration);
+        toast.show();
+        
+        // do insert
+        
+        //don't record anything if the task and kid are blank
+        if (taskSpinnerSelection.length() == 0 && kidSpinnerSelection.length() == 0) {
+        	return;
+        }
+        
+        ContentValues values = new ContentValues();
+        float kidRunningTotalValue = 0f;
+        //query event table for most recent kid entry to get runningTotal value for the kid
+        String[] eventProjection = { EventTable.COLUMN_ID, EventTable.COLUMN_TASKITEM, EventTable.COLUMN_KIDNAME,
+        		EventTable.COLUMN_KIDRUNNINGTOTAL, EventTable.COLUMN_DATEDONE };
+        
+        //SELECT * FROM table ORDER BY column DESC LIMIT 1;  -- query example to get the last submitted row
+        String eventWhere = EventTable.COLUMN_KIDNAME + " like '%" + kidSpinnerSelection + "%'";
+        //String eventSelect = EventTable.COLUMN_KIDNAME + ", " + EventTable.COLUMN_KIDRUNNINGTOTOAL + EventTable.COLUMN_DATEDONE;
+        //String eventSelect = "kidName,kidRunningTotal,dateDone";
+        String eventOrder = EventTable.COLUMN_DATEDONE + " desc limit 1";
+        Cursor eventCursor = getContentResolver().query(awardUri, eventProjection, eventWhere, null, eventOrder); //don't think this is right uri
+        if (eventCursor != null) {
+        	//eventCursor.moveToFirst(); only pulling one row, so I don't think I need this
+        	kidRunningTotalValue = eventCursor.getFloat(eventCursor.getColumnIndexOrThrow(EventTable.COLUMN_KIDRUNNINGTOTAL));
+        }
+        //add eventValue of current event to runningTotal
+        kidRunningTotalValue += DEFAULT_TASK_VALUE;
+        //insert into the table
+        values.put(EventTable.COLUMN_KIDNAME, kidSpinnerSelection);
+        values.put(EventTable.COLUMN_KIDRUNNINGTOTAL, kidRunningTotalValue);
+        values.put(EventTable.COLUMN_TASKITEM, taskSpinnerSelection);
+        //need to be aware that if the insert explicitly sets DATEDONE to null, then i'll get null for EventTable.COLUMN_DATEDONE
+        //hopefully I don't have to do anything and the database will auto insert dates into the rows like I want.
+        
+        if(awardUri == null) {
+        	awardUri = getContentResolver().insert(FamCashContentProvider.CONTENT_URI, values);
+        }
+        toast = Toast.makeText(ctx, "Finished writing database. kidName: " + kidSpinnerSelection + " taskItem: " 
+        + taskSpinnerSelection + " kidRunningTotal: " + kidRunningTotalValue, duration);
         toast.show();
     }//end of recordTaskEntry
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.activity_task_award, menu);
+        getMenuInflater().inflate(R.menu.listmenu, menu);
         return true;
     }//end onCreateOptionsMenu
     

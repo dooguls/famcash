@@ -10,21 +10,24 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/dollarsign"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="net.famcash.TaskAward"
-            android:label="@string/app_name" >
+            android:name="net.famcash.OverviewActivity"
+            android:label="@string/app_name"> 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter>  
+        </activity>
+        <activity
+            android:name="net.famcash.TaskAward"
+            android:windowSoftInputMode="stateVisible|adjustResize" >
         </activity>
         <provider
-       		android:authorities="net.famcash.contentprovider.FamCashContentProvider"
-       		android:name="net.famcash.contentprovider.FamCashContentProvider"
+            android:name="net.famcash.contentprovider.FamCashContentProvider"
+       		android:authorities="net.famcash.contentprovider"
        		android:exported="false" >
 		</provider>
     </application>

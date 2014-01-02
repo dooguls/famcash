@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-  private static final String DATABASE_NAME = "famcashtable.db";
+  private static final String DATABASE_NAME = "famcash.db";
   private static final int DATABASE_VERSION = 1;
 
   public DBHelper(Context context) {
@@ -16,8 +16,6 @@ public class DBHelper extends SQLiteOpenHelper {
   // Method is called during creation of the database
   @Override
   public void onCreate(SQLiteDatabase database) {
-    TaskTable.onCreate(database);
-    KidTable.onCreate(database);
     EventTable.onCreate(database);
   }
 
@@ -26,8 +24,6 @@ public class DBHelper extends SQLiteOpenHelper {
   @Override
   public void onUpgrade(SQLiteDatabase database, int oldVersion,
       int newVersion) {
-    TaskTable.onUpgrade(database, oldVersion, newVersion);
-    KidTable.onUpgrade(database, oldVersion, newVersion);
     EventTable.onUpgrade(database, oldVersion, newVersion);
   }
 } // end of class DBHelper
