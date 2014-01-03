@@ -82,6 +82,10 @@ public class OverviewActivity extends ListActivity implements
 
 	private void createTodo() {
 		Intent i = new Intent(this, TaskAward.class);
+		Uri taskUri = Uri.parse(FamCashContentProvider.CONTENT_URI + "/");
+		i.putExtra(FamCashContentProvider.CONTENT_ITEM_TYPE, taskUri);
+
+		// Activity returns an result if called with startActivityForResult
 		startActivity(i);
 	}
 

@@ -63,8 +63,8 @@ public class TaskAward extends Activity {
     private Uri awardUri;
 	
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreate(Bundle bundle) {
+        super.onCreate(bundle);
         setContentView(R.layout.activity_task_award);
         
         // Set up taskPicker spinner
@@ -85,6 +85,17 @@ public class TaskAward extends Activity {
         OnItemSelectedListener spinnerListener_kid = new myOnItemSelectedListener(this,this.mAdapter_kid);
         kid_spinner.setOnItemSelectedListener(spinnerListener_kid);
         
+        Bundle extras = getIntent().getExtras();
+        // check from the saved Instance
+        awardUri = (bundle == null) ? null : (Uri) bundle.getParcelable(FamCashContentProvider.CONTENT_ITEM_TYPE);
+        
+        //Log.d(OverviewActivity.class.getName(), "uri from savedInstance activity: #" + awardUri.toString() + "# ");
+        //or passed from another activity
+        if (extras != null) {
+        	awardUri = extras.getParcelable(FamCashContentProvider.CONTENT_ITEM_TYPE);
+        	Log.d(OverviewActivity.class.getName(), "uri from another activity: #" + awardUri.toString() + "# ");
+        }
+        
         // Set up button handler
         mTaskSubmitButton = (Button) findViewById(R.id.button_taskSubmit);
         mTaskSubmitButton.setOnClickListener(new View.OnClickListener() {
@@ -92,15 +103,6 @@ public class TaskAward extends Activity {
                 onSaveButtonClicked();
             }
         });
-        
-        Bundle extras = getIntent().getExtras();
-        // check from the saved Instance
-        awardUri = (savedInstanceState == null) ? null : (Uri) savedInstanceState.getParcelable(FamCashContentProvider.CONTENT_ITEM_TYPE);
-        //or passed from another activity
-        if (extras != null) {
-        	awardUri = extras.getParcelable(FamCashContentProvider.CONTENT_ITEM_TYPE);
-        }
-        
         
     }//end of onCreate
     
@@ -176,15 +178,16 @@ public class TaskAward extends Activity {
     protected void recordTaskEntry() {
     	String taskSpinnerSelection = getTaskSpinnerSelection();
         String kidSpinnerSelection = getKidSpinnerSelection();
+        Uri catchUri;
         
         Log.d(OverviewActivity.class.getName(), "starting recordTaskEntry with task: " + taskSpinnerSelection + " & kid " + kidSpinnerSelection);
         
-        //need to write this to a local database, but don't know how to do that yet, so we Toast!
+        /*
         Context ctx = getApplicationContext();
         int duration = Toast.LENGTH_LONG;
         Toast toast = Toast.makeText(ctx, "User selected task: " + taskSpinnerSelection + " for kid: " + kidSpinnerSelection + "start db work", duration);
         toast.show();
-        
+        */
         // do insert
         
         //don't record anything if the task and kid are blank
@@ -203,14 +206,33 @@ public class TaskAward extends Activity {
         //String eventSelect = EventTable.COLUMN_KIDNAME + ", " + EventTable.COLUMN_KIDRUNNINGTOTOAL + EventTable.COLUMN_DATEDONE;
         //String eventSelect = "kidName,kidRunningTotal,dateDone";
         String eventOrder = EventTable.COLUMN_DATEDONE + " desc limit 1";
-        Log.d(OverviewActivity.class.getName(), "Grabbing Cursor");
-        Cursor eventCursor = getContentResolver().query(awardUri, eventProjection, eventWhere, null, eventOrder); //don't think this is right uri
+        //Log.d(OverviewActivity.class.getName(), "Grabbing Cursor. EventWhere: #" + eventWhere + "# eventorder: #" + eventOrder + "#");
+        /*if (awardUri != null)
+        {
+        	Log.d(OverviewActivity.class.getName(), "awardUri #" + awardUri.toString() + "# ");
+        }
+        else {
+        	Log.d(OverviewActivity.class.getName(), "awardUri is NULL!!!!");
+        }
+        */
+        Cursor eventCursor = getContentResolver().query(awardUri, eventProjection, eventWhere, null, eventOrder);
+        int kidTotalIndex = eventCursor.getColumnIndexOrThrow(EventTable.COLUMN_KIDRUNNINGTOTAL);
+        /*
+        int idIndex = eventCursor.getColumnIndexOrThrow(EventTable.COLUMN_ID);
+        int taskIndex = eventCursor.getColumnIndexOrThrow(EventTable.COLUMN_TASKITEM);
+        int nameIndex = eventCursor.getColumnIndexOrThrow(EventTable.COLUMN_KIDNAME);
+        int dateIndex = eventCursor.getColumnIndexOrThrow(EventTable.COLUMN_DATEDONE);
+        */
+        //Log.d(OverviewActivity.class.getName(), "Got Cursor");
         if (eventCursor != null) {
-        	//eventCursor.moveToFirst(); only pulling one row, so I don't think I need this
-        	kidRunningTotalValue = eventCursor.getFloat(eventCursor.getColumnIndexOrThrow(EventTable.COLUMN_KIDRUNNINGTOTAL));
+        	//Log.d(OverviewActivity.class.getName(),"Cursor has count: " + eventCursor.getCount() + " items");
+        	eventCursor.moveToFirst(); //only pulling one row, so I don't think I need this
+        	kidRunningTotalValue = eventCursor.getFloat(kidTotalIndex);
+        	//Log.d(OverviewActivity.class.getName(),"kidRunningTotalValue is: " + kidRunningTotalValue);
         }
         //add eventValue of current event to runningTotal
-        kidRunningTotalValue += DEFAULT_TASK_VALUE;
+        kidRunningTotalValue = kidRunningTotalValue + DEFAULT_TASK_VALUE;
+        //Log.d(OverviewActivity.class.getName(), "kidRunningTotalValue after adding the defualt task value: " + kidRunningTotalValue);
         //insert into the table
         values.put(EventTable.COLUMN_KIDNAME, kidSpinnerSelection);
         values.put(EventTable.COLUMN_KIDRUNNINGTOTAL, kidRunningTotalValue);
@@ -218,13 +240,36 @@ public class TaskAward extends Activity {
         //need to be aware that if the insert explicitly sets DATEDONE to null, then i'll get null for EventTable.COLUMN_DATEDONE
         //hopefully I don't have to do anything and the database will auto insert dates into the rows like I want.
         
-        if(awardUri == null) {
-        	awardUri = getContentResolver().insert(FamCashContentProvider.CONTENT_URI, values);
+        if(awardUri != null) {
+        	catchUri = getContentResolver().insert(FamCashContentProvider.CONTENT_URI, values);
+        	/*
+        	Cursor debugCursor = getContentResolver().query(awardUri, eventProjection,  eventWhere, null, null);
+        	if (debugCursor != null) {
+	        	while (debugCursor.moveToNext()) {
+	        		Log.d(OverviewActivity.class.getName(),"ID: " + debugCursor.getInt(idIndex) 
+	        		+ " TaskItem: " + debugCursor.getString(taskIndex) 
+	        		+ " KidName " + debugCursor.getString(nameIndex)
+	        		+ " KidRunningTotal " + debugCursor.getFloat(kidTotalIndex)
+	        		+ " Datedone " + debugCursor.getString(dateIndex));
+	        	}//end while loop
+	        	debugCursor.close();
+        	}//end if debugCursor != Null
+        	else {
+        		Log.d(OverviewActivity.class.getName(),"debugCursor was null");
+        	}
+        	*/
+        }//end if awardURI != NULL
+        else {
+        	//Log.d(OverviewActivity.class.getName(),"awardUri was null when I tried to insert");
         }
-        toast = Toast.makeText(ctx, "Finished writing database. kidName: " + kidSpinnerSelection + " taskItem: " 
-        + taskSpinnerSelection + " kidRunningTotal: " + kidRunningTotalValue, duration);
-        toast.show();
+        //toast = Toast.makeText(ctx, "Finished writing database. kidName: " + kidSpinnerSelection + " taskItem: " 
+        //+ taskSpinnerSelection + " kidRunningTotal: " + kidRunningTotalValue, duration);
+        //toast.show();
+        Log.d(OverviewActivity.class.getName(), "Finished writing database. kidName: " + kidSpinnerSelection + " taskItem: " 
+        		+ taskSpinnerSelection + " kidRunningTotal: " + kidRunningTotalValue);
+        eventCursor.close();
     }//end of recordTaskEntry
+    
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
